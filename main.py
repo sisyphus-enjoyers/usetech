@@ -8,11 +8,11 @@ app = FastAPI()
 @app.get("/")
 async def validate(authorization: str = Header(None)):
     if authorization is None:
-        return {"error": "Authorization header is missing"}
+        raise HTTPException(status_code=403, detail="Authorization header is missing")
 
     parts = authorization.split()
     if len(parts) != 2 or parts[0].lower() != "bearer":
-        return {"error": "Invalid Authorization header format"}
+        raise HTTPException(status_code=403, detail="Invalid Authorization header format")
 
     token = parts[1]
 
