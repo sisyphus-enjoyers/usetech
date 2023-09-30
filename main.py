@@ -14,31 +14,35 @@ app = FastAPI()
 #     return response.text
 
 
-@app.get('/')
-async def main():
-    request = requests.get('https://localhost:8080/realms/master/protocol/openid-connect/certs')
-    # rsa_public_key = request['access_token']
+# @app.get('/')
+# async def main():
+#     request = requests.get('https://localhost:8080/realms/master/protocol/openid-connect/certs')
+#     # rsa_public_key = request['access_token']
 
-    # print(rsa_public_key)
-    print(request)
+#     # print(rsa_public_key)
+#     print(request)
 
 
 @app.get("/validate/{jwt_token}")
 async def validate(jwt_token):
-    response = requests.get("http://localhost:8080/realms/master/protocol/openid-connect/certs").json()
-    print(response)
+    response = requests.get("http://localhost:8080/realms/master/").json()
+    public_key = response['public_key']
+    decoded_payload = jwt.decode(
+        jwt_token,
+        '-----BEGIN PUBLIC KEY-----\n' + public_key + '\n-----END PUBLIC KEY-----', 
+        algorithms=["RS256"],
+        audience="account"
+        )
+    print(decoded_payload)
 
-
-    # print(jwt_token)
-
-    try:
-        for item in range(response['keys']):
-            decoded_payload = jwt.decode(jwt_token, '-----BEGIN PUBLIC KEY-----\n' + rsa_public_key + '-----END PUBLIC KEY', algorithms=[ALGORITHM])
-            print(decoded_payload)
-        return decoded_payload
+    # try:
+    #     for item in range(response['keys']):
+    #         decoded_payload = jwt.decode(jwt_token, '-----BEGIN PUBLIC KEY-----\n' + item['kid'] + '-----END PUBLIC KEY-----', algorithms="RS256")
+    #         print(decoded_payload, end="\n")
+    #     return decoded_payload
     
-    except:
-        raise HTTPException(status_code=403, detail="Error blyat")
+    # except:
+    #     raise HTTPException(status_code=403, detail="Error blyat")
 
 
 @app.get("/journal/")
