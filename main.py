@@ -27,22 +27,19 @@ app = FastAPI()
 async def validate(jwt_token):
     response = requests.get("http://localhost:8080/realms/master/").json()
     public_key = response['public_key']
-    decoded_payload = jwt.decode(
-        jwt_token,
-        '-----BEGIN PUBLIC KEY-----\n' + public_key + '\n-----END PUBLIC KEY-----', 
-        algorithms=["RS256"],
-        audience="account"
-        )
-    print(decoded_payload)
-
-    # try:
-    #     for item in range(response['keys']):
-    #         decoded_payload = jwt.decode(jwt_token, '-----BEGIN PUBLIC KEY-----\n' + item['kid'] + '-----END PUBLIC KEY-----', algorithms="RS256")
-    #         print(decoded_payload, end="\n")
-    #     return decoded_payload
     
-    # except:
-    #     raise HTTPException(status_code=403, detail="Error blyat")
+
+    try:
+        decoded_payload = jwt.decode(
+            jwt_token,
+            '-----BEGIN PUBLIC KEY-----\n' + public_key + '\n-----END PUBLIC KEY-----', 
+            algorithms=["RS256"],
+            audience="account"
+        )
+        print(decoded_payload)
+        return decoded_payload
+    except:
+        raise HTTPException(status_code=403, detail="Error blyat")
 
 
 @app.get("/journal/")
