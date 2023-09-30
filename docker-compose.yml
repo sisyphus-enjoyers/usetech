@@ -1,0 +1,65 @@
+version: "3"
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  traefik:
+    image: traefik:v2.10
+    restart: on-failure
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-auth.forwardauth.address=http://localhost:8000/validate"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - keycloak
+    networks:
+      - default
+      - public
+
+  postgres:
+      image: postgres
+      restart: on-failure
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: pass
+      ports:
+        - "5432:5432"
+      networks:
+        - default
+        - public
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.3
+    restart: on-failure
+    depends_on:
+      - postgres
+    command:
+      - start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB_PASSWORD=pass
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+      - public
+
+networks:
+    default:
+      internal: true
+    public:
+      internal: false
