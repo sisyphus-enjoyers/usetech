@@ -1,6 +1,7 @@
-PyJWT~=2.8.0
+python-jose
+python-jose[cryptography]
 fastapi~=0.103.1
 uvicorn[standard]
 sqlalchemy
-requests
+requests~=2.31.0
 cryptography

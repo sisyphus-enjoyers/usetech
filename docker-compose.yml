@@ -7,27 +7,30 @@ volumes:
 services:
   traefik:
     image: traefik:v2.10
+    container_name: "traefik"
     restart: on-failure
     command:
-      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.test-auth.forwardauth.address=http://localhost:8000/validate"
+      - "traefik.http.middlewares.auth.forwardauth.address=http://usetech:8000/"
     ports:
       - "80:80"
+      - "8090:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - keycloak
+#    depends_on:
+#      usetech:
+#        condition: service_started
     networks:
       - default
       - public
 
   postgres:
       image: postgres
+      container_name: "postgres"
       restart: on-failure
       volumes:
         - postgres_data:/var/lib/postgresql/data
@@ -35,28 +38,48 @@ services:
         POSTGRES_DB: keycloak
         POSTGRES_USER: keycloak
         POSTGRES_PASSWORD: pass
-      ports:
-        - "5432:5432"
       networks:
         - default
-        - public
 
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.3
+    container_name: "keycloak"
     restart: on-failure
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
     command:
       - start-dev
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=postgres
+      - KC_DB_URL_DATABASE=keycloak
+      - KC_DB_SCHEMA=public
       - KC_DB_PASSWORD=pass
     ports:
       - "8080:8080"
     networks:
       - default
       - public
+
+  usetech:
+    build: .
+    container_name: "usetech"
+    restart: on-failure
+    depends_on:
+      keycloak:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    networks:
+      - default
+      - public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.usetech.rule=Host(`localhost`)"
+      - "traefik.http.routers.usetech.middlewares=auth"
 
 networks:
     default:
