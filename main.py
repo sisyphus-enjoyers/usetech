@@ -6,12 +6,6 @@ secret_key = "c7ffd516db32a361859d3cc340b0301fb1a3c8e772f772b0889b837b2d70343c22
 algorithm = "RS256"
 
 
-@app.get("/new-token")
-async def root():
-    token = jwt.encode({"message": "Hello World"}, secret_key, algorithm=algorithm)
-    return token
-
-
 @app.get("/validate/{token}")
 async def say_hello(token: str):
     try:
