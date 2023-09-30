@@ -10,7 +10,6 @@ services:
     container_name: "traefik"
     restart: on-failure
     command:
-      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
