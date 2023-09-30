@@ -20,7 +20,7 @@ async def validate(jwt_token):
         print(decoded_payload)
         return decoded_payload
     except:
-        raise HTTPException(status_code=403, detail="Error blyat")
+        raise HTTPException(status_code=403, detail="Error")
 
 
 @app.get("/journal/")
