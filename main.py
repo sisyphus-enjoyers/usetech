@@ -16,7 +16,7 @@ async def validate(authorization: str = Header(None)):
 
     token = parts[1]
 
-    response = requests.get("http://localhost:8080/realms/master/").json()
+    response = requests.get("http://keycloak:8080/realms/master/").json()
     public_key = response['public_key']
 
     try:
