@@ -2,3 +2,5 @@ PyJWT~=2.8.0
 fastapi~=0.103.1
 uvicorn[standard]
 sqlalchemy
+requests
+cryptography
