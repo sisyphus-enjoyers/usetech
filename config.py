@@ -1,0 +1,3 @@
+ALGORITHM = "RS256"
+KEYCLOACK_SERVER = "localhost:8080"
+POSTGRESQL = "localhost:5432"
