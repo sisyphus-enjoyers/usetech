@@ -17,9 +17,8 @@ async def validate(jwt_token):
             algorithms=["RS256"],
             audience="account"
         )
-        print(decoded_payload)
         return decoded_payload
-    except:
+    except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=403, detail="Error")
 
 
