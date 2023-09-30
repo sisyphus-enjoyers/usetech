@@ -7,6 +7,7 @@ volumes:
 services:
   traefik:
     image: traefik:v2.10
+    container_name: "traefik"
     restart: on-failure
     command:
       - "--api.insecure=true"
@@ -15,15 +16,15 @@ services:
       - "--entrypoints.web.address=:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.auth.forwardauth.address=http://localhost:8000/validate"
+      - "traefik.http.middlewares.auth.forwardauth.address=http://usetech:8000/"
     ports:
       - "80:80"
       - "8090:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      usetech:
-        condition: service_started
+#    depends_on:
+#      usetech:
+#        condition: service_started
     networks:
       - default
       - public
