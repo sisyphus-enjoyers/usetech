@@ -2,6 +2,8 @@ python-jose
 python-jose[cryptography]
 fastapi~=0.103.1
 uvicorn[standard]
-sqlalchemy
+sqlalchemy~=2.0.21
 requests~=2.31.0
 cryptography
+psycopg2
+pydantic~=2.4.2

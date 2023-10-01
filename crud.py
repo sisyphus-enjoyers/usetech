@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+import models
+import schemas
+
 
 def get_client(db: Session, client_id: int):
     return db.query(models.Client).filter(models.Client.client_id == client_id).first()

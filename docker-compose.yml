@@ -7,7 +7,6 @@ volumes:
 services:
   nginx:
     image: nginx:latest
-    container_name: my_nginx
     depends_on:
       usetech:
         condition: service_started
@@ -21,7 +20,6 @@ services:
 
   postgres:
       image: postgres
-      container_name: "postgres"
       restart: on-failure
       volumes:
         - postgres_data:/var/lib/postgresql/data
@@ -34,7 +32,6 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.3
-    container_name: "keycloak"
     restart: on-failure
     depends_on:
       postgres:
@@ -57,16 +54,14 @@ services:
 
   usetech:
     build: .
-    container_name: "usetech"
     restart: on-failure
+    expose:
+      - "8000"
     depends_on:
       keycloak:
         condition: service_started
-    ports:
-      - "8000:8000"
     networks:
       - default
-      - public
 
 networks:
     default:
