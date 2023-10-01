@@ -1,42 +1,12 @@
-import requests
-from fastapi import FastAPI, HTTPException, Header, Depends
-from jose import jwt
-
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
-from sql_app import crud, models, schemas
-from sql_app.database import SessionLocal, engine
+from . import crud, models, schemas
+from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-
-@app.get("/")
-async def validate(authorization: str = Header(None)):
-    if authorization is None:
-        raise HTTPException(status_code=403, detail="Authorization header is missing")
-
-    parts = authorization.split()
-    if len(parts) != 2 or parts[0].lower() != "bearer":
-        raise HTTPException(status_code=403, detail="Invalid Authorization header format")
-
-    token = parts[1]
-
-    response = requests.get("http://keycloak:8080/realms/master/").json()
-    public_key = response['public_key']
-
-    try:
-        jwt.decode(
-            token,
-            '-----BEGIN PUBLIC KEY-----\n' + public_key + '\n-----END PUBLIC KEY-----',
-            algorithms=["RS256"],
-            audience="account"
-        )
-        return
-    except jwt.JWTError:
-        raise HTTPException(status_code=403, detail="Invalid credentials")
-
 
 def get_db():
     db = SessionLocal()
