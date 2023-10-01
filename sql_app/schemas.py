@@ -19,6 +19,8 @@ class Client(ClientBase):
 
 class ServiceBase(BaseModel):
     name: str
+    host: str
+    path: str
     
 
 class ServiceCreate(ServiceBase):
@@ -33,6 +35,24 @@ class Service(ServiceBase):
     host: str
     path: str
 
+    class Config:
+        orm_mode = True
+
+
+class PolicyBase(BaseModel):
+    client_id: int
+    service_id: int
+    
+
+class PolicyCreate(PolicyBase):
+    client_id: int
+    service_id: int
+
+
+class Policy(PolicyBase):
+    id: int
+    client_id: int
+    service_id: int
 
     class Config:
         orm_mode = True

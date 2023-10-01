@@ -35,3 +35,17 @@ def create_service(db: Session, service: schemas.ServiceCreate):
     db.refresh(db_service)
     return db_service
 
+
+def get_client_services(db: Session, client_id: int):
+    return db.query(models.Policy).filter(models.Policy.client_id == client_id)
+
+def if_client_access_service(db: Session, client_id: int, service_id: int):
+    return db.query(models.Policy).filter(models.Policy.client_id == client_id, models.Policy.service_id == service_id).first()
+    
+
+def add_policy(db: Session, policy: schemas.PolicyCreate):
+    db_policy = models.Policy(client_id=policy.client_id, service_id=policy.service_id)
+    db.add(db_policy)
+    db.commit()
+    db.refresh(db_policy)
+    return db_policy
